@@ -9,12 +9,15 @@ public class CharacterAiming : MonoBehaviour
 
     [SerializeField] Transform followTarget;
     [SerializeField] Camera playerCam;
+    [SerializeField] Transform playerObj;
 
     public Cinemachine.AxisState xAxis;
     public Cinemachine.AxisState yAxis;
 
     Animator animator;
     int isAimingVariable = Animator.StringToHash("isAiming");
+
+    private bool startedAiming = true;
 
     // Start is called before the first frame update
     void Start()
@@ -31,13 +34,19 @@ public class CharacterAiming : MonoBehaviour
     {
         bool isAiming = Input.GetMouseButton(1);
         animator.SetBool(isAimingVariable, isAiming);
-
         /*
         if (isAiming)
         {
-            transform.forward = playerCam.transform.forward;
+            //startedAiming = false;
+            followTarget.transform.forward = transform.forward;
         }
         */
+        
+        if (isAiming)
+        {
+            playerObj.transform.rotation = Quaternion.Euler(new Vector3(0f, followTarget.transform.rotation.eulerAngles.y, 0f));
+        }
+        
     }
 
     private void FixedUpdate()
@@ -47,6 +56,4 @@ public class CharacterAiming : MonoBehaviour
 
         followTarget.eulerAngles = new Vector3(yAxis.Value, xAxis.Value, 0);
     }
-
-
 }

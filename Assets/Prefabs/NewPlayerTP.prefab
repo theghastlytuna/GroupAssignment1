@@ -320,7 +320,7 @@ MonoBehaviour:
   speed: 5
   jumpForce: 10
   groundDrag: 5
-  airSlowdown: 0.3
+  airSlowdown: 0.486
   rotSpeed: 10
   floorMask:
     serializedVersion: 2

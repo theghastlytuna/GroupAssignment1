@@ -64,9 +64,21 @@ public class TpMovement : MonoBehaviour
 
         MovePlayer();
 
+        if (rBody.velocity.sqrMagnitude > 200)
+        {
+            rBody.drag = 0.05f + (rBody.velocity.sqrMagnitude - 200) / 10 * 1;
+        }
+
+        else
+        {
+            rBody.drag = 0.05f;
+        }
+
+        /*
         if (isGrounded) rBody.drag = groundDrag;
 
         else rBody.drag = 0;
+        */
     }
 
     private void MyInput()
@@ -87,10 +99,12 @@ public class TpMovement : MonoBehaviour
         //Calculate direction
         moveDir = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
+        rBody.AddForce(moveDir.normalized * speed * 10f, ForceMode.Force);
+
         //If grounded, normal movement
-        if (isGrounded) rBody.AddForce(moveDir.normalized * speed * 10f, ForceMode.Force);
+        //if (isGrounded) rBody.AddForce(moveDir.normalized * speed * 10f, ForceMode.Force);
 
         //Else if in the air, account for lack of drag (cube airSlowdown for a better range)
-        else if (!isGrounded) rBody.AddForce(moveDir.normalized * speed * 10f * (airSlowdown * airSlowdown * airSlowdown) , ForceMode.Force);
+        //else if (!isGrounded) rBody.AddForce(moveDir.normalized * speed * 10f * (airSlowdown * airSlowdown * airSlowdown), ForceMode.Force);
     }
 }
