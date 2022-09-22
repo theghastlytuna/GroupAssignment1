@@ -10,6 +10,7 @@ public class TpMovement : MonoBehaviour
     [SerializeField] [Range(0.0f, 10.0f)] private float groundDrag = 5.0f;
     [SerializeField] [Range(0.1f, 1.0f)] private float airSlowdown = 0.3f;
     [SerializeField] [Range(5.0f, 30.0f)] private float rotSpeed = 10.0f;
+	[SerializeField] [Range(1.0f, 100.0f)] private float maxSpeed = 10.0f;
 
     [Header("Ground Check")]
     [SerializeField] private LayerMask floorMask;
@@ -64,9 +65,9 @@ public class TpMovement : MonoBehaviour
 
         MovePlayer();
 
-        if (rBody.velocity.sqrMagnitude > 200)
+        if (rBody.velocity.sqrMagnitude > maxSpeed)
         {
-            rBody.drag = 0.05f + (rBody.velocity.sqrMagnitude - 200) / 10 * 1;
+            rBody.drag = 0.05f + (rBody.velocity.sqrMagnitude - maxSpeed) / 10 * 1;
         }
 
         else
@@ -74,11 +75,12 @@ public class TpMovement : MonoBehaviour
             rBody.drag = 0.05f;
         }
 
-        /*
-        if (isGrounded) rBody.drag = groundDrag;
+		//rBody.drag = groundDrag;
 
-        else rBody.drag = 0;
-        */
+        //if (isGrounded) rBody.drag = groundDrag;
+
+        //else rBody.drag = 0;
+        
     }
 
     private void MyInput()
@@ -99,10 +101,11 @@ public class TpMovement : MonoBehaviour
         //Calculate direction
         moveDir = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
-        rBody.AddForce(moveDir.normalized * speed * 10f, ForceMode.Force);
+        //rBody.AddForce(moveDir.normalized * speed * 10f, ForceMode.Force);
 
         //If grounded, normal movement
-        //if (isGrounded) rBody.AddForce(moveDir.normalized * speed * 10f, ForceMode.Force);
+        //if (isGrounded) 
+		rBody.AddForce(moveDir.normalized * speed * 10f, ForceMode.Force);
 
         //Else if in the air, account for lack of drag (cube airSlowdown for a better range)
         //else if (!isGrounded) rBody.AddForce(moveDir.normalized * speed * 10f * (airSlowdown * airSlowdown * airSlowdown), ForceMode.Force);

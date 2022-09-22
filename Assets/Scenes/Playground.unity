@@ -677,11 +677,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2393622445975040263, guid: 214cb4d6639fcf14fa5207bddca37699, type: 3}
       propertyPath: groundDrag
-      value: 5.66
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 2393622445975040263, guid: 214cb4d6639fcf14fa5207bddca37699, type: 3}
       propertyPath: airSlowdown
-      value: 0.1
+      value: 0.79
       objectReference: {fileID: 0}
     - target: {fileID: 2393622445975040312, guid: 214cb4d6639fcf14fa5207bddca37699, type: 3}
       propertyPath: m_Name
