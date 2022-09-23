@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class CharacterAiming : MonoBehaviour
 {
@@ -32,7 +33,7 @@ public class CharacterAiming : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        bool isAiming = Input.GetMouseButton(1);
+        bool isAiming = false;
         animator.SetBool(isAimingVariable, isAiming);
         /*
         if (isAiming)
@@ -56,4 +57,11 @@ public class CharacterAiming : MonoBehaviour
 
         followTarget.eulerAngles = new Vector3(yAxis.Value, xAxis.Value, 0);
     }
+
+	/*
+	void OnLook(InputAction playerInput)
+	{
+
+	}
+	*/
 }
