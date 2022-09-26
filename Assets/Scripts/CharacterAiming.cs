@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Cinemachine;
 
 public class CharacterAiming : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class CharacterAiming : MonoBehaviour
     [SerializeField] Transform followTarget;
     [SerializeField] Camera playerCam;
     [SerializeField] Transform playerObj;
+    [SerializeField] CinemachineVirtualCamera zoomCam;
 
     public Cinemachine.AxisState xAxis;
     public Cinemachine.AxisState yAxis;
@@ -18,12 +20,16 @@ public class CharacterAiming : MonoBehaviour
     Animator animator;
     int isAimingVariable = Animator.StringToHash("isAiming");
 
-    private bool startedAiming = true;
+    bool isAiming = false;
+
+    private void OnEnable()
+    {
+       // aim
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
@@ -33,7 +39,6 @@ public class CharacterAiming : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        bool isAiming = false;
         animator.SetBool(isAimingVariable, isAiming);
         /*
         if (isAiming)
@@ -58,10 +63,12 @@ public class CharacterAiming : MonoBehaviour
         followTarget.eulerAngles = new Vector3(yAxis.Value, xAxis.Value, 0);
     }
 
-	/*
-	void OnLook(InputAction playerInput)
+	
+	void OnAim()
 	{
+        isAiming = !isAiming;
 
+        if (isAiming) zoomCam.Priority += 10;
+        else zoomCam.Priority -= 10;
 	}
-	*/
 }

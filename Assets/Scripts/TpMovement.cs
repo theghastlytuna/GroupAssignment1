@@ -37,6 +37,8 @@ public class TpMovement : MonoBehaviour
     void Start()
     {
         rBody = GetComponent<Rigidbody>();
+       
+        //Freeze the rotation of the rigid body, ensuring it doesn't fall over
         rBody.freezeRotation = true;
 
         //player = this.transform;
