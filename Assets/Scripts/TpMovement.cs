@@ -6,12 +6,10 @@ using UnityEngine.InputSystem;
 public class TpMovement : MonoBehaviour
 {
     [Header("Movement")]
-    //[SerializeField] [Range(1.0f, 10.0f)] private float speed = 5.0f;
     [SerializeField] [Range(3.0f, 20.0f)] private float jumpForce = 10.0f;
-    //[SerializeField] [Range(0.0f, 10.0f)] private float groundDrag = 5.0f;
-    //[SerializeField] [Range(0.1f, 1.0f)] private float airSlowdown = 0.3f;
     [SerializeField] [Range(5.0f, 30.0f)] private float rotSpeed = 10.0f;
 	[SerializeField] [Range(1.0f, 100.0f)] private float maxSpeed = 10.0f;
+    [SerializeField] [Range(0.01f, 1f)] private float dragVariable = 1.0f;
 
     [Header("Ground Check")]
     [SerializeField] private LayerMask floorMask;
@@ -40,53 +38,22 @@ public class TpMovement : MonoBehaviour
        
         //Freeze the rotation of the rigid body, ensuring it doesn't fall over
         rBody.freezeRotation = true;
-
-        //player = this.transform;
     }
 
     // Update is called once per frame
     void Update()
     {
-		//MyInput();
-
-		/*
-        //Rotate orientation
-        Vector3 viewDir = transform.position - new Vector3(playerCam.transform.position.x, transform.position.y, playerCam.transform.position.z);
-        orientation.forward = viewDir.normalized;
-
-        //Rotate playerObj
-        horizontalInput = Input.GetAxis("Horizontal");
-        verticalInput = Input.GetAxis("Vertical");
-
-        Vector3 inputDir = orientation.forward * verticalInput + orientation.right * horizontalInput;
-
-        //If the player has input a movement, spherically lerp between the current forward and the new direction
-        if (inputDir != Vector3.zero) playerObj.forward = Vector3.Slerp(playerObj.forward, inputDir.normalized, Time.deltaTime * rotSpeed);
-		*/
-		RotatePlayer();
-		
+        //Was there a reason this was in Update and not FixedUpdate?
+		//RotatePlayer();
 	}
 
     private void FixedUpdate()
     {
         isGrounded = Physics.CheckSphere(feetTransform.position, 0.1f, floorMask);
 
+        RotatePlayer();
         MovePlayer();
-
-		AddHorizontalDrag();
-    }
-
-    private void MyInput()
-    {
-        //horizontalInput = Input.GetAxisRaw("Horizontal");
-        //verticalInput = Input.GetAxisRaw("Vertical");
-
-        //Check for spacebar press
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
-        {
-            //If the feet object is touching the ground, then jump
-            rBody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-        }
+        AddHorizontalDrag();
     }
 
 	private void RotatePlayer()
@@ -115,32 +82,13 @@ public class TpMovement : MonoBehaviour
 
 	private void AddHorizontalDrag()
 	{
-		//Debug.Log(rBody.velocity * -0.5f);
-		float dragX = 0.05f + (rBody.velocity.x * rBody.velocity.x - maxSpeed) / 10 * 1;
-		float dragZ = 0.05f + (rBody.velocity.z * rBody.velocity.z - maxSpeed) / 10 * 1;
+        //The lower the drag variable, the lower the drag
+        float dragForce = Mathf.Pow(Mathf.Sqrt(rBody.velocity.x * rBody.velocity.x + rBody.velocity.z * rBody.velocity.z), 2) * Mathf.Pow(dragVariable, 3); 
 
-		rBody.velocity = new Vector3(rBody.velocity.x * (1 - Time.deltaTime * dragX), rBody.velocity.y, rBody.velocity.z * (1 - Time.deltaTime * dragZ));
+        Vector3 dragVec = dragForce * -new Vector3(rBody.velocity.x, 0f, rBody.velocity.z);
 
-		//rBody.AddForce(-rBody.velocity, ForceMode.Force);
-	}
-
-	/*
-	void OnLook(InputValue playerInput)
-	{
-		
-		Vector2 mouseMovement = playerInput.Get<Vector2>();
-
-		//Rotate orientation
-		Vector3 viewDir = transform.position - new Vector3(playerCam.transform.position.x, transform.position.y, playerCam.transform.position.z);
-		orientation.forward = viewDir.normalized;
-
-		Vector3 inputDir = orientation.forward * mouseMovement.y + orientation.right * mouseMovement.x;
-
-		//If the player has input a movement, spherically lerp between the current forward and the new direction
-		if (inputDir != Vector3.zero) playerObj.forward = Vector3.Slerp(playerObj.forward, inputDir.normalized, Time.deltaTime * rotSpeed);
-		
-	}
-	*/
+        rBody.velocity = rBody.velocity + dragVec;
+    }
 
 	void OnMove(InputValue playerInput)
 	{
@@ -150,4 +98,9 @@ public class TpMovement : MonoBehaviour
 		verticalInput = playerMovement.y;
 
 	}
+
+    void OnJump()
+    {
+        if (isGrounded) rBody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+    }
 }
