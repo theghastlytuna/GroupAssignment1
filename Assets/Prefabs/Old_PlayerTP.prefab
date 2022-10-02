@@ -408,7 +408,7 @@ GameObject:
   - component: {fileID: 1627850802504052702}
   - component: {fileID: 1627850802504052703}
   m_Layer: 7
-  m_Name: PlayerTP
+  m_Name: Old_PlayerTP
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
