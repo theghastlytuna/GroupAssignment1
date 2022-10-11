@@ -103,4 +103,14 @@ public class TpMovement : MonoBehaviour
     {
         if (isGrounded) rBody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
     }
+
+    public void SetJumpForce(float newForce)
+    {
+        jumpForce = newForce;
+    }
+
+    public float GetJumpForce()
+    {
+        return jumpForce;
+    }
 }
