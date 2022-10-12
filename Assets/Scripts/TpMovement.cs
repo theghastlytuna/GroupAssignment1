@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Photon.Pun;
 
 public class TpMovement : MonoBehaviour
 {
@@ -23,11 +24,13 @@ public class TpMovement : MonoBehaviour
     float horizontalInput;
     float verticalInput;
 
-    //bool isJumping;
+    bool isJumping;
 
     Vector3 moveDir;
 
     Rigidbody rBody;
+
+    PhotonView view;
 
     bool isGrounded;
 
@@ -38,17 +41,32 @@ public class TpMovement : MonoBehaviour
        
         //Freeze the rotation of the rigid body, ensuring it doesn't fall over
         rBody.freezeRotation = true;
+        view = GetComponent<PhotonView>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        //Was there a reason this was in Update and not FixedUpdate?
-		//RotatePlayer();
-	}
+        //If the player is your character you can control that one only
+        if (view.IsMine)
+        {
+            MyInput();
+        }
+    }
 
     private void FixedUpdate()
     {
+        if (view.IsMine)
+        {
+            isGrounded = Physics.CheckSphere(feetTransform.position, 0.1f, floorMask);
+
+            MovePlayer();
+
+            if (isGrounded) rBody.drag = groundDrag;
+
+            else rBody.drag = 0;
+        }
+    }
         isGrounded = Physics.CheckSphere(feetTransform.position, 0.1f, floorMask);
 
         RotatePlayer();
