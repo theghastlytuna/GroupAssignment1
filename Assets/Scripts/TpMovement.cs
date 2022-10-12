@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class TpMovement : MonoBehaviour
 {
@@ -9,25 +10,23 @@ public class TpMovement : MonoBehaviour
     [SerializeField] [Range(3.0f, 20.0f)] private float jumpForce = 10.0f;
     [SerializeField] [Range(0.0f, 10.0f)] private float groundDrag = 5.0f;
     [SerializeField] [Range(0.1f, 1.0f)] private float airSlowdown = 0.3f;
-    [SerializeField] [Range(5.0f, 30.0f)] private float rotSpeed = 10.0f;
 
     [Header("Ground Check")]
     [SerializeField] private LayerMask floorMask;
     [SerializeField] private Transform feetTransform;
 
-    [Header("Rotation")]
-    [SerializeField] private Transform orientation;
-    [SerializeField] private Transform playerObj;
-    [SerializeField] private Camera playerCam;
+    public Transform orientation;
 
     float horizontalInput;
     float verticalInput;
 
-    //bool isJumping;
+    bool isJumping;
 
     Vector3 moveDir;
 
     Rigidbody rBody;
+
+    PhotonView view;
 
     bool isGrounded;
 
@@ -36,49 +35,31 @@ public class TpMovement : MonoBehaviour
     {
         rBody = GetComponent<Rigidbody>();
         rBody.freezeRotation = true;
-
-        //player = this.transform;
+        view = GetComponent<PhotonView>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        MyInput();
-        
-        //Rotate orientation
-        Vector3 viewDir = transform.position - new Vector3(playerCam.transform.position.x, transform.position.y, playerCam.transform.position.z);
-        orientation.forward = viewDir.normalized;
-
-        //Rotate playerObj
-        horizontalInput = Input.GetAxis("Horizontal");
-        verticalInput = Input.GetAxis("Vertical");
-        Vector3 inputDir = orientation.forward * verticalInput + orientation.right * horizontalInput;
-
-        //If the player has input a movement, spherically lerp between the current forward and the new direction
-        if (inputDir != Vector3.zero) playerObj.forward = Vector3.Slerp(playerObj.forward, inputDir.normalized, Time.deltaTime * rotSpeed);
+        //If the player is your character you can control that one only
+        if (view.IsMine)
+        {
+            MyInput();
+        }
     }
 
     private void FixedUpdate()
     {
-        isGrounded = Physics.CheckSphere(feetTransform.position, 0.1f, floorMask);
-
-        MovePlayer();
-
-        if (rBody.velocity.sqrMagnitude > 200)
+        if (view.IsMine)
         {
-            rBody.drag = 0.05f + (rBody.velocity.sqrMagnitude - 200) / 10 * 1;
+            isGrounded = Physics.CheckSphere(feetTransform.position, 0.1f, floorMask);
+
+            MovePlayer();
+
+            if (isGrounded) rBody.drag = groundDrag;
+
+            else rBody.drag = 0;
         }
-
-        else
-        {
-            rBody.drag = 0.05f;
-        }
-
-        /*
-        if (isGrounded) rBody.drag = groundDrag;
-
-        else rBody.drag = 0;
-        */
     }
 
     private void MyInput()
@@ -99,12 +80,10 @@ public class TpMovement : MonoBehaviour
         //Calculate direction
         moveDir = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
-        rBody.AddForce(moveDir.normalized * speed * 10f, ForceMode.Force);
-
         //If grounded, normal movement
-        //if (isGrounded) rBody.AddForce(moveDir.normalized * speed * 10f, ForceMode.Force);
+        if (isGrounded) rBody.AddForce(moveDir.normalized * speed * 10f, ForceMode.Force);
 
         //Else if in the air, account for lack of drag (cube airSlowdown for a better range)
-        //else if (!isGrounded) rBody.AddForce(moveDir.normalized * speed * 10f * (airSlowdown * airSlowdown * airSlowdown), ForceMode.Force);
+        else if (!isGrounded) rBody.AddForce(moveDir.normalized * speed * 10f * (airSlowdown * airSlowdown * airSlowdown) , ForceMode.Force);
     }
 }
