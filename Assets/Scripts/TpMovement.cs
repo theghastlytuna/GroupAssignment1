@@ -48,25 +48,19 @@ public class TpMovement : MonoBehaviour
     void Update()
     {
         //If the player is your character you can control that one only
-        if (view.IsMine)
+        //if (view.IsMine)
         {
-            MyInput();
+            //MyInput();
         }
     }
 
     private void FixedUpdate()
     {
-        if (view.IsMine)
-        {
-            isGrounded = Physics.CheckSphere(feetTransform.position, 0.1f, floorMask);
-
-            MovePlayer();
-
-            if (isGrounded) rBody.drag = groundDrag;
-
-            else rBody.drag = 0;
+        /*
+        if (view.IsMine)        {
+            //isGrounded = Physics.CheckSphere(feetTransform.position, 0.1f, floorMask);            //MovePlayer();            //if (isGrounded) rBody.drag = groundDrag;            //else rBody.drag = 0;
         }
-    }
+        */
         isGrounded = Physics.CheckSphere(feetTransform.position, 0.1f, floorMask);
 
         RotatePlayer();
