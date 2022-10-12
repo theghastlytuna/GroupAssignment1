@@ -41,31 +41,33 @@ public class TpMovement : MonoBehaviour
        
         //Freeze the rotation of the rigid body, ensuring it doesn't fall over
         rBody.freezeRotation = true;
+
+        //Photon component attached to player
         view = GetComponent<PhotonView>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        //If the player is your character you can control that one only
-        //if (view.IsMine)
-        {
-            //MyInput();
-        }
+        
     }
 
     private void FixedUpdate()
     {
+        //if you control THAT character
+        if (view.IsMine)        {
+            isGrounded = Physics.CheckSphere(feetTransform.position, 0.1f, floorMask);
+
+            RotatePlayer();
+            MovePlayer();
+            AddHorizontalDrag();
+        }
         /*
-        if (view.IsMine)        {
-            //isGrounded = Physics.CheckSphere(feetTransform.position, 0.1f, floorMask);            //MovePlayer();            //if (isGrounded) rBody.drag = groundDrag;            //else rBody.drag = 0;
+        else
+        {
+            GetComponent<TpMovement>().enabled = false;
         }
         */
-        isGrounded = Physics.CheckSphere(feetTransform.position, 0.1f, floorMask);
-
-        RotatePlayer();
-        MovePlayer();
-        AddHorizontalDrag();
     }
 
 	private void RotatePlayer()

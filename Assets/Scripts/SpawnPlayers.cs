@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Photon.Pun;
 
 public class SpawnPlayers : MonoBehaviour
@@ -14,9 +15,20 @@ public class SpawnPlayers : MonoBehaviour
 
     private void Start()
     {
-        Vector2 randomPosition = new Vector2(Random.Range(minX, maxX), Random.Range(minZ, maxZ));
-        PhotonNetwork.Instantiate(playerPrefab.name, randomPosition, Quaternion.identity);
-        //Quaternion identity means no rotation
+        SpawnMyPlayer();
     }
 
+    void SpawnMyPlayer()
+    {
+        Vector3 randomPosition = new Vector3(Random.Range(minX, maxX), 1, Random.Range(minZ, maxZ));
+        GameObject myPlayer = (GameObject)PhotonNetwork.Instantiate(playerPrefab.name, randomPosition, Quaternion.identity);
+
+        //ENABLED SO THAT EACH CLIENT HAS THEIR OWN VERSION
+        myPlayer.GetComponent<TpMovement>().enabled = true;
+        myPlayer.GetComponent<PlayerInput>().enabled = true;
+        myPlayer.GetComponent<CharacterAiming>().enabled = true;
+        myPlayer.transform.Find("Camera Holder").gameObject.SetActive(true);
+        myPlayer.transform.Find("Zoomed Camera").gameObject.SetActive(true);
+        myPlayer.transform.Find("Virtual Camera").gameObject.SetActive(true);
+    }
 }
