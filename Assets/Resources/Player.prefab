@@ -1208,6 +1208,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb842b8ce02d7a3408d1e3b9b3832904, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  superjumpForce: 20
+  slowfallForce: 10
   powerUpDuration: 3
   selectedPowerUp: 0
 --- !u!114 &8360810863972604655
