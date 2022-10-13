@@ -9,7 +9,7 @@ public class TpMovement : MonoBehaviour
     [Header("Movement")]
     [SerializeField] [Range(3.0f, 20.0f)] private float jumpForce = 10.0f;
     [SerializeField] [Range(5.0f, 30.0f)] private float rotSpeed = 10.0f;
-	[SerializeField] [Range(1.0f, 100.0f)] private float maxSpeed = 10.0f;
+	[SerializeField] [Range(1.0f, 1000.0f)] private float maxSpeed = 100.0f;
     [SerializeField] [Range(0.01f, 1f)] private float dragVariable = 1.0f;
 
     [Header("Ground Check")]
@@ -33,6 +33,12 @@ public class TpMovement : MonoBehaviour
     PhotonView view;
 
     bool isGrounded;
+
+    RaycastHit rayHit;
+
+    Vector3 groundNormal = Vector3.up;
+
+    //float groundAngle = 0f;
 
     // Start is called before the first frame update
     void Start()
@@ -70,6 +76,7 @@ public class TpMovement : MonoBehaviour
         */
     }
 
+    //For rotating the player object when the player inputs a direction
 	private void RotatePlayer()
 	{
 		//Rotate orientation
@@ -82,18 +89,32 @@ public class TpMovement : MonoBehaviour
 		if (inputDir != Vector3.zero) playerObj.forward = Vector3.Slerp(playerObj.forward, inputDir.normalized, Time.deltaTime * rotSpeed);
 	}
 
-
+    //For moving the player object when the player inputs a direction
     private void MovePlayer()
     {
+       
         //Calculate direction
         moveDir = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
-        //If grounded, normal movement
-        //if (isGrounded) 
-		rBody.AddForce(moveDir.normalized * maxSpeed * 10f, ForceMode.Force);
+        rBody.AddForce(moveDir.normalized * maxSpeed, ForceMode.Force);
 
+        //This code is for keeping the player on a ramp while they are doing down it.
+        //Raycast downwards to see what the player is standing on.
+        if (Physics.Raycast(feetTransform.position, -transform.up, out rayHit, 0.1f))
+        {
+            //Create a quaternion that holds the rotation from up to along the ramp
+            Quaternion groundRot = Quaternion.FromToRotation(Vector3.up, rayHit.normal);
+
+            //Create a new velocity by multiplying the roation quaternion with the current velocity
+            Vector3 newVelocity = groundRot * rBody.velocity;
+
+            //If the y component of the velocity is less than 0, meaning the player is going down a ramp,
+            //then set the velocity to the new velocity
+            if (newVelocity.y < 0) rBody.velocity = newVelocity;
+        }
     }
 
+    //For removing slipperiness
 	private void AddHorizontalDrag()
 	{
         //The lower the drag variable, the lower the drag
@@ -104,15 +125,16 @@ public class TpMovement : MonoBehaviour
         rBody.velocity = rBody.velocity + dragVec;
     }
 
+    //New input system
 	void OnMove(InputValue playerInput)
 	{
 		Vector2 playerMovement = playerInput.Get<Vector2>();
 
 		horizontalInput = playerMovement.x;
 		verticalInput = playerMovement.y;
-
 	}
 
+    //New input system
     void OnJump()
     {
         if (isGrounded) rBody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);

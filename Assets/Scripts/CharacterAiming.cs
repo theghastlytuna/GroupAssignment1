@@ -7,8 +7,8 @@ using Cinemachine;
 
 public class CharacterAiming : MonoBehaviour
 {
-    [SerializeField] [Range(10.0f, 40.0f)] private float turnSpeed = 15.0f;
-    [SerializeField] [Range(0.1f, 1.0f)] private float aimDuration = 0.3f;
+    //[SerializeField] [Range(10.0f, 40.0f)] private float turnSpeed = 15.0f;
+    //[SerializeField] [Range(0.1f, 1.0f)] private float aimDuration = 0.3f;
 
     //[SerializeField] Transform followTarget;
     [SerializeField] Camera playerCam;
@@ -113,7 +113,7 @@ public class CharacterAiming : MonoBehaviour
         return holdingProjectile;
     }
 
-    //Function for locking ap rojectile to the player
+    //Function for locking a projectile to the player
     public void SetProjectile(GameObject projectile)
     {
         //Set holding projectile to true, and save the projectile being held
