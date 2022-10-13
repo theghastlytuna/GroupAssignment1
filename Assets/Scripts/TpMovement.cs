@@ -149,4 +149,9 @@ public class TpMovement : MonoBehaviour
     {
         return jumpForce;
     }
+
+    public bool GetIsGrounded()
+    {
+        return isGrounded;
+    }
 }

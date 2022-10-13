@@ -6,6 +6,10 @@ public class PowerUpScript : MonoBehaviour
 {
     private GameObject playerObject;
     private float initialJumpForce; //grabbed value at start
+    [SerializeField] [Range(1.0f, 100.0f)] private float superjumpForce = 20.0f;
+    private bool slowfallEnabled = false;
+    [SerializeField] [Range(1.0f, 100.0f)] private float slowfallForce = 10.0f;
+    private bool playerGrounded = true;
     private bool usedPowerUp = false; //if we have used our powerup
     public float powerUpDuration = 3f; //total duration of ability in seconds
     private float currentPowerUpDuration = 0f; //internal clock for powerup duration
@@ -33,8 +37,20 @@ public class PowerUpScript : MonoBehaviour
 
             if (selectedPowerUp == powerUpList.SuperJump)
             {
-                playerObject.GetComponent<TpMovement>().SetJumpForce(20);
+                playerObject.GetComponent<TpMovement>().SetJumpForce(superjumpForce);
             }
+            else if (selectedPowerUp == powerUpList.SlowFall)
+            {
+                slowfallEnabled = true;
+            }
+        }
+    }
+
+    private void Update()
+    {
+        if (slowfallEnabled)
+        {
+            playerGrounded = playerObject.GetComponent<TpMovement>().GetIsGrounded();
         }
     }
 
@@ -45,6 +61,11 @@ public class PowerUpScript : MonoBehaviour
         if (usedPowerUp)
         {
             currentPowerUpDuration += Time.fixedDeltaTime;
+        }
+
+        if (!playerGrounded)
+        {
+            playerObject.GetComponent<Rigidbody>().AddForce(Vector3.up * slowfallForce);
         }
 
         //if we're over our timer and we actually used a powerup
@@ -59,6 +80,13 @@ public class PowerUpScript : MonoBehaviour
                 playerObject.GetComponent<TpMovement>().SetJumpForce(initialJumpForce);
 
             }
+            else if (selectedPowerUp == powerUpList.SlowFall)
+            {
+                slowfallEnabled = false;
+                playerGrounded = true;
+            }
+
+            selectedPowerUp = powerUpList.None;
         }
     }
 }
