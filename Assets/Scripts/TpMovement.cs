@@ -1,15 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using Photon.Pun;
 
 public class TpMovement : MonoBehaviour
 {
     [Header("Movement")]
-    [SerializeField] [Range(1.0f, 10.0f)] private float speed = 5.0f;
     [SerializeField] [Range(3.0f, 20.0f)] private float jumpForce = 10.0f;
-    [SerializeField] [Range(0.0f, 10.0f)] private float groundDrag = 5.0f;
-    [SerializeField] [Range(0.1f, 1.0f)] private float airSlowdown = 0.3f;
     [SerializeField] [Range(5.0f, 30.0f)] private float rotSpeed = 10.0f;
+	[SerializeField] [Range(1.0f, 1000.0f)] private float maxSpeed = 100.0f;
+    [SerializeField] [Range(0.01f, 1f)] private float dragVariable = 1.0f;
 
     [Header("Ground Check")]
     [SerializeField] private LayerMask floorMask;
@@ -18,93 +19,134 @@ public class TpMovement : MonoBehaviour
     [Header("Rotation")]
     [SerializeField] private Transform orientation;
     [SerializeField] private Transform playerObj;
-    [SerializeField] private Camera playerCam;
+	[SerializeField] private Camera playerCam;
 
     float horizontalInput;
     float verticalInput;
 
-    //bool isJumping;
+    bool isJumping;
 
     Vector3 moveDir;
 
     Rigidbody rBody;
 
+    PhotonView view;
+
     bool isGrounded;
+
+    RaycastHit rayHit;
+
+    Vector3 groundNormal = Vector3.up;
+
+    //float groundAngle = 0f;
 
     // Start is called before the first frame update
     void Start()
     {
         rBody = GetComponent<Rigidbody>();
+       
+        //Freeze the rotation of the rigid body, ensuring it doesn't fall over
         rBody.freezeRotation = true;
 
-        //player = this.transform;
+        //Photon component attached to player
+        view = GetComponent<PhotonView>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        MyInput();
         
-        //Rotate orientation
-        Vector3 viewDir = transform.position - new Vector3(playerCam.transform.position.x, transform.position.y, playerCam.transform.position.z);
-        orientation.forward = viewDir.normalized;
-
-        //Rotate playerObj
-        horizontalInput = Input.GetAxis("Horizontal");
-        verticalInput = Input.GetAxis("Vertical");
-        Vector3 inputDir = orientation.forward * verticalInput + orientation.right * horizontalInput;
-
-        //If the player has input a movement, spherically lerp between the current forward and the new direction
-        if (inputDir != Vector3.zero) playerObj.forward = Vector3.Slerp(playerObj.forward, inputDir.normalized, Time.deltaTime * rotSpeed);
     }
 
     private void FixedUpdate()
     {
-        isGrounded = Physics.CheckSphere(feetTransform.position, 0.1f, floorMask);
+        //if you control THAT character
+        if (view.IsMine)        {
+            isGrounded = Physics.CheckSphere(feetTransform.position, 0.1f, floorMask);
 
-        MovePlayer();
-
-        if (rBody.velocity.sqrMagnitude > 200)
-        {
-            rBody.drag = 0.05f + (rBody.velocity.sqrMagnitude - 200) / 10 * 1;
+            RotatePlayer();
+            MovePlayer();
+            AddHorizontalDrag();
         }
-
+        /*
         else
         {
-            rBody.drag = 0.05f;
+            GetComponent<TpMovement>().enabled = false;
         }
-
-        /*
-        if (isGrounded) rBody.drag = groundDrag;
-
-        else rBody.drag = 0;
         */
     }
 
-    private void MyInput()
-    {
-        horizontalInput = Input.GetAxisRaw("Horizontal");
-        verticalInput = Input.GetAxisRaw("Vertical");
+    //For rotating the player object when the player inputs a direction
+	private void RotatePlayer()
+	{
+		//Rotate orientation
+		Vector3 viewDir = transform.position - new Vector3(playerCam.transform.position.x, transform.position.y, playerCam.transform.position.z);
+		orientation.forward = viewDir.normalized;
 
-        //Check for spacebar press
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
-        {
-            //If the feet object is touching the ground, then jump
-            rBody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-        }
-    }
+		Vector3 inputDir = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
+		//If the player has input a movement, spherically lerp between the current forward and the new direction
+		if (inputDir != Vector3.zero) playerObj.forward = Vector3.Slerp(playerObj.forward, inputDir.normalized, Time.deltaTime * rotSpeed);
+	}
+
+    //For moving the player object when the player inputs a direction
     private void MovePlayer()
     {
+       
         //Calculate direction
         moveDir = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
-        rBody.AddForce(moveDir.normalized * speed * 10f, ForceMode.Force);
+        rBody.AddForce(moveDir.normalized * maxSpeed, ForceMode.Force);
 
-        //If grounded, normal movement
-        //if (isGrounded) rBody.AddForce(moveDir.normalized * speed * 10f, ForceMode.Force);
+        //This code is for keeping the player on a ramp while they are doing down it.
+        //Raycast downwards to see what the player is standing on.
+        if (Physics.Raycast(feetTransform.position, -transform.up, out rayHit, 0.1f))
+        {
+            //Create a quaternion that holds the rotation from up to along the ramp
+            Quaternion groundRot = Quaternion.FromToRotation(Vector3.up, rayHit.normal);
 
-        //Else if in the air, account for lack of drag (cube airSlowdown for a better range)
-        //else if (!isGrounded) rBody.AddForce(moveDir.normalized * speed * 10f * (airSlowdown * airSlowdown * airSlowdown), ForceMode.Force);
+            //Create a new velocity by multiplying the roation quaternion with the current velocity
+            Vector3 newVelocity = groundRot * rBody.velocity;
+
+            //If the y component of the velocity is less than 0, meaning the player is going down a ramp,
+            //then set the velocity to the new velocity
+            if (newVelocity.y < 0) rBody.velocity = newVelocity;
+        }
+    }
+
+    //For removing slipperiness
+	private void AddHorizontalDrag()
+	{
+        //The lower the drag variable, the lower the drag
+        float dragForce = Mathf.Pow(Mathf.Sqrt(rBody.velocity.x * rBody.velocity.x + rBody.velocity.z * rBody.velocity.z), 2) * Mathf.Pow(dragVariable, 3); 
+
+        Vector3 dragVec = dragForce * -new Vector3(rBody.velocity.x, 0f, rBody.velocity.z);
+
+        rBody.velocity = rBody.velocity + dragVec;
+    }
+
+    //New input system
+	void OnMove(InputValue playerInput)
+	{
+		Vector2 playerMovement = playerInput.Get<Vector2>();
+
+		horizontalInput = playerMovement.x;
+		verticalInput = playerMovement.y;
+	}
+
+    //New input system
+    void OnJump()
+    {
+        if (isGrounded) rBody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+    }
+
+    public void SetJumpForce(float newForce)
+    {
+        jumpForce = newForce;
+    }
+
+    public float GetJumpForce()
+    {
+        return jumpForce;
     }
 }
