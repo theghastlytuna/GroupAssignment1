@@ -73,7 +73,7 @@ public class PowerUpScript : MonoBehaviour
             //rb.AddForce(Vector3.up * slowfallForce);
             if (rb.velocity.y < maxFallSpeed)
             {
-                rb.AddForce(Vector3.up * (rb.velocity.y * rb.velocity.y + maxFallSpeed) / 10 * 5);
+                rb.AddForce(Vector3.up * (rb.velocity.y * rb.velocity.y + maxFallSpeed) / 10 * 10);
             }
         }
 
