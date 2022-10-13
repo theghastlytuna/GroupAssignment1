@@ -12,6 +12,7 @@ public class SpawnPlayers : MonoBehaviour
     public float maxX;
     public float minZ;
     public float maxZ;
+   
 
     private void Start()
     {
@@ -20,7 +21,7 @@ public class SpawnPlayers : MonoBehaviour
 
     void SpawnMyPlayer()
     {
-        Vector3 randomPosition = new Vector3(Random.Range(minX, maxX), 1, Random.Range(minZ, maxZ));
+        Vector3 randomPosition = transform.position;
         GameObject myPlayer = (GameObject)PhotonNetwork.Instantiate(playerPrefab.name, randomPosition, Quaternion.identity);
 
         //ENABLED SO THAT EACH CLIENT HAS THEIR OWN VERSION
