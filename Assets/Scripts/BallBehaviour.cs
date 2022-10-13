@@ -11,7 +11,7 @@ public class BallBehaviour : MonoBehaviour
     private GameObject playerObject;
     //private GameObject playerModel;
 
-    [SerializeField] [Range(500.0f, 1500.0f)] private float ThrowForce = 800.0f;
+    //[SerializeField] [Range(500.0f, 1500.0f)] private float ThrowForce = 800.0f;
 
     void Start()
     {
