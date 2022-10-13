@@ -1088,7 +1088,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   jumpForce: 8
   rotSpeed: 10
-  maxSpeed: 10
+  maxSpeed: 100
   dragVariable: 0.1
   floorMask:
     serializedVersion: 2
@@ -1133,7 +1133,6 @@ MonoBehaviour:
   playerObj: {fileID: 1083343764891013159}
   zoomCam: {fileID: 1083343764844370058}
   throwForce: 1500
-  reticle: {fileID: 0}
 --- !u!114 &3332405909751510459
 MonoBehaviour:
   m_ObjectHideFlags: 0

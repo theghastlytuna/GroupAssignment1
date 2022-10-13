@@ -16,7 +16,8 @@ public class CharacterAiming : MonoBehaviour
     [SerializeField] CinemachineVirtualCamera zoomCam;
     [SerializeField] [Range(100.0f, 2000.0f)] float throwForce = 500.0f;
 
-    [SerializeField] Image reticle;
+    //[SerializeField] Image reticle;
+    Image reticle;
 
     bool isAiming = false;
     bool holdingProjectile = false;
@@ -32,6 +33,8 @@ public class CharacterAiming : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        reticle = GameObject.Find("Reticle").GetComponent<Image>();
+
         //Lock the cursor, make it invisible
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
