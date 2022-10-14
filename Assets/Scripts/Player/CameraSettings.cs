@@ -42,4 +42,26 @@ public class CameraSettings : MonoBehaviour
         zoomInCam.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_InvertInput = zoomedInXInvert;
         zoomInCam.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_InvertInput = zoomedInYInvert;
     }
+
+    public void SetZoomedOutSensitivity(float sensitivity)
+    {
+        zoomedOutSensitivity = sensitivity;
+    }
+
+    public void SetZoomedInSensitivity(float sensitivity)
+    {
+        zoomedInSensitivity = sensitivity;
+    }
+
+    public void SetZoomedOutInvert(bool x, bool y)
+    {
+        zoomedOutXInvert = x;
+        zoomedOutYInvert = y;
+    }
+
+    public void SetZoomedInInvert(bool x, bool y)
+    {
+        zoomedInXInvert = x;
+        zoomedInYInvert = y;
+    }
 }
