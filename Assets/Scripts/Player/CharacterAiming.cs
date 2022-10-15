@@ -7,24 +7,20 @@ using Cinemachine;
 
 public class CharacterAiming : MonoBehaviour
 {
-    //[SerializeField] [Range(10.0f, 40.0f)] private float turnSpeed = 15.0f;
-    //[SerializeField] [Range(0.1f, 1.0f)] private float aimDuration = 0.3f;
-
-    //[SerializeField] Transform followTarget;
+    [Header("Required Objects")]
     [SerializeField] Camera playerCam;
     [SerializeField] Transform playerObj;
     [SerializeField] CinemachineVirtualCamera zoomCam;
+
+    [Header("Throwing Projectiles")]
     [SerializeField] [Range(100.0f, 2000.0f)] float throwForce = 500.0f;
 
-    //[SerializeField] Image reticle;
     Image reticle;
 
     bool isAiming = false;
     bool holdingProjectile = false;
 
     GameObject heldProjectile = null;
-
-    //public PlayerAction playerInput;
 
     private void OnEnable()
     {
@@ -33,11 +29,11 @@ public class CharacterAiming : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        reticle = GameObject.Find("Reticle").GetComponent<Image>();
-
         //Lock the cursor, make it invisible
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        reticle = GameObject.Find("Reticle").GetComponent<Image>();
 
         //Hide the reticle
         reticle.enabled = false;
@@ -56,13 +52,6 @@ public class CharacterAiming : MonoBehaviour
 
     private void FixedUpdate()
     {
-        //Old camera rotation system
-        /*
-        xAxis.Update(Time.fixedDeltaTime);
-        yAxis.Update(Time.fixedDeltaTime);
-
-        followTarget.eulerAngles = new Vector3(yAxis.Value, xAxis.Value, 0);
-        */
     }
 
 	//Aiming is a value type, not a button type, meaning it can sense when aim is being held down and released

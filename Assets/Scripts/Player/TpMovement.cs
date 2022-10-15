@@ -19,12 +19,12 @@ public class TpMovement : MonoBehaviour
     [Header("Rotation")]
     [SerializeField] private Transform orientation;
     [SerializeField] private Transform playerObj;
+
+    [Header("Camera")]
 	[SerializeField] private Camera playerCam;
 
     float horizontalInput;
     float verticalInput;
-
-    bool isJumping;
 
     Vector3 moveDir;
 
@@ -35,10 +35,6 @@ public class TpMovement : MonoBehaviour
     bool isGrounded;
 
     RaycastHit rayHit;
-
-    Vector3 groundNormal = Vector3.up;
-
-    //float groundAngle = 0f;
 
     // Start is called before the first frame update
     void Start()
@@ -83,6 +79,7 @@ public class TpMovement : MonoBehaviour
 		Vector3 viewDir = transform.position - new Vector3(playerCam.transform.position.x, transform.position.y, playerCam.transform.position.z);
 		orientation.forward = viewDir.normalized;
 
+        //Determine the input direction based on the current orientation of the player model
 		Vector3 inputDir = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
 		//If the player has input a movement, spherically lerp between the current forward and the new direction
@@ -120,8 +117,10 @@ public class TpMovement : MonoBehaviour
         //The lower the drag variable, the lower the drag
         float dragForce = Mathf.Pow(Mathf.Sqrt(rBody.velocity.x * rBody.velocity.x + rBody.velocity.z * rBody.velocity.z), 2) * Mathf.Pow(dragVariable, 3); 
 
+        //Multiply the drag force by the current velocity (x and z) and make it negative to find the drag vector
         Vector3 dragVec = dragForce * -new Vector3(rBody.velocity.x, 0f, rBody.velocity.z);
 
+        //Add the drag to the current velocity
         rBody.velocity = rBody.velocity + dragVec;
     }
 
@@ -140,11 +139,13 @@ public class TpMovement : MonoBehaviour
         if (isGrounded) rBody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
     }
 
+    //For setting the jump force
     public void SetJumpForce(float newForce)
     {
         jumpForce = newForce;
     }
 
+    //For getting the jump force
     public float GetJumpForce()
     {
         return jumpForce;
