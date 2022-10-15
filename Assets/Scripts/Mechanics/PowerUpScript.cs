@@ -5,7 +5,18 @@ using UnityEngine;
 public class PowerUpScript : MonoBehaviour
 {
     private GameObject playerObject;
+    private Rigidbody rb; //player rigidboy
+
+    //Super Jump Vairables
     private float initialJumpForce; //grabbed value at start
+    [SerializeField] [Range(1.0f, 40.0f)] private float superjumpForce = 15.0f;
+
+    //Slowfall variables
+    private bool slowfallEnabled = false;
+    [SerializeField] [Range(1.0f, 20.0f)] private float slowfallForce = 10.0f;
+    [SerializeField] [Range(-1.0f, -10.0f)] private float maxFallSpeed = -4.0f;
+    private bool playerGrounded = true;
+
     private bool usedPowerUp = false; //if we have used our powerup
     public float powerUpDuration = 3f; //total duration of ability in seconds
     private float currentPowerUpDuration = 0f; //internal clock for powerup duration
@@ -17,6 +28,7 @@ public class PowerUpScript : MonoBehaviour
     void Start()
     {
         playerObject = gameObject;
+        rb = gameObject.GetComponent<Rigidbody>();
         initialJumpForce = playerObject.GetComponent<TpMovement>().GetJumpForce();
     }
 
@@ -33,8 +45,21 @@ public class PowerUpScript : MonoBehaviour
 
             if (selectedPowerUp == powerUpList.SuperJump)
             {
-                playerObject.GetComponent<TpMovement>().SetJumpForce(20);
+                playerObject.GetComponent<TpMovement>().SetJumpForce(superjumpForce);
             }
+            else if (selectedPowerUp == powerUpList.SlowFall)
+            {
+                slowfallEnabled = true;
+            }
+        }
+    }
+
+    private void Update()
+    {
+        //this one goes in update instead of fixed update; causes freezes otherwise
+        if (slowfallEnabled)
+        {
+            playerGrounded = playerObject.GetComponent<TpMovement>().GetIsGrounded();
         }
     }
 
@@ -45,6 +70,16 @@ public class PowerUpScript : MonoBehaviour
         if (usedPowerUp)
         {
             currentPowerUpDuration += Time.fixedDeltaTime;
+        }
+
+        //only apply the force when the player is in the air
+        if (!playerGrounded)
+        {
+            //only apply forec if the player is actually falling
+            if (rb.velocity.y < maxFallSpeed)
+            {
+                rb.AddForce(Vector3.up * (rb.velocity.y * rb.velocity.y + maxFallSpeed) / 10 * slowfallForce); //apply force as a function of current downward velocity
+            }
         }
 
         //if we're over our timer and we actually used a powerup
@@ -59,6 +94,13 @@ public class PowerUpScript : MonoBehaviour
                 playerObject.GetComponent<TpMovement>().SetJumpForce(initialJumpForce);
 
             }
+            else if (selectedPowerUp == powerUpList.SlowFall)
+            {
+                slowfallEnabled = false;
+                playerGrounded = true;
+            }
+            Debug.Log("Powerup done");
+            //selectedPowerUp = powerUpList.None; //"Consume" powerup when done
         }
     }
 }
