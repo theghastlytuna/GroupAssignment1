@@ -17,8 +17,11 @@ public abstract class Collectable : MonoBehaviour
         if (collision.gameObject.layer == 7 && canPickup)//7 is PlayerLayer
         {
             pickup();
+            EventManager.onPlayerCollect?.Invoke(null, new CollectableArgs(this));
         }
     }
+
+   
 
     private void OnCollisionExit(Collision collision)
     {

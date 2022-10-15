@@ -12,7 +12,7 @@ public class SpawnPlayers : MonoBehaviour
     public float maxX;
     public float minZ;
     public float maxZ;
-   
+    public GameObject playerManager;
 
     private void Start()
     {
@@ -23,7 +23,7 @@ public class SpawnPlayers : MonoBehaviour
     {
         Vector3 randomPosition = transform.position;
         GameObject myPlayer = (GameObject)PhotonNetwork.Instantiate(playerPrefab.name, randomPosition, Quaternion.identity);
-
+        myPlayer.transform.SetParent(playerManager.transform);
         //ENABLED SO THAT EACH CLIENT HAS THEIR OWN VERSION
         myPlayer.GetComponent<TpMovement>().enabled = true;
         myPlayer.GetComponent<PlayerInput>().enabled = true;

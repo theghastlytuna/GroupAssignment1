@@ -18,12 +18,16 @@ public class CreateAndJoin : MonoBehaviourPunCallbacks
     public void JoinRoom()
     {
         PhotonNetwork.JoinRoom(joinInput.text);
+        
     }
 
     public override void OnJoinedRoom()
     {
         //Change this depending on game level scene
-        PhotonNetwork.LoadLevel("playgroundv2");
+        PhotonNetwork.LoadLevel("playgroundv3");
+
+        //TODO: fix
+        //GameManager.instance.playersConnected++;
     }
 
 }
