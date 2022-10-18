@@ -50,19 +50,20 @@ public class RoundManager : MonoBehaviour
         
        
         int toLoad = 0;
-        Debug.Log("Count: " + nextRounds.Count);
         foreach(Round r in nextRounds)
         {
-            Debug.Log("a");
+           // Debug.Log(r);
+           // Debug.Log("toLoad before " + toLoad);
             r.load();
             toLoad += (int)r.getType();
+           // Debug.Log("toLoad after " + toLoad);
             nextRoundSeconds += r.getRoundTime();
             currentRounds.Add(r);
         }
 
+        //Debug.Log("toLoad " + toLoad);
 
-        
-       
+
         if (nextRoundsHaveIntermission())
         {
             sendPlayersToIntermission();
@@ -77,6 +78,7 @@ public class RoundManager : MonoBehaviour
        
         currentRoundSecondsElapsed = 0;
         currentRoundSeconds = nextRoundSeconds;
+        updateScreenClock();
         nextRoundSeconds = 0;
         
         nextRounds.Clear();
@@ -124,32 +126,32 @@ public class RoundManager : MonoBehaviour
     {
         List<roundType> playingRounds = new List<roundType>();
         int levelsPerRound = 2;
-        roundType addingRound = roundType.NONE;
-        System.Array values = System.Enum.GetValues(typeof(roundType));
+       
+        List<roundType> possibleRounds = new List<roundType>();
+        foreach(roundType r in System.Enum.GetValues(typeof(roundType)))
+        {
+            if(r == roundType.NONE || r == roundType.INTERMISSION)
+            {
+                continue;
+            }
+            possibleRounds.Add(r);
+        }
         for (int i = 0; i < levelsPerRound; i++)
         {
-            
-
-            
 
 
-            addingRound = (roundType)values.GetValue(Random.Range(2, values.Length));
-           // Debug.Log(addingRound + " > CREATED");
-            while (playingRounds.Contains(addingRound))
-            {
-               // Debug.Log(addingRound + " > EXISTS");
-                addingRound = (roundType)values.GetValue(Random.Range(2, values.Length)); ;
-                //Debug.Log(addingRound + " > RECREATED");
 
+            int randomIndex = Random.Range(0, possibleRounds.Count);
 
-            }
-            //Debug.Log(addingRound + " > ADDED");
-            playingRounds.Add(addingRound);
+           
+            playingRounds.Add(possibleRounds[randomIndex]);
+            possibleRounds.RemoveAt(randomIndex);
         }
 
        
         foreach (roundType r in playingRounds)
         {
+            
             if (r == roundType.BUMPER)
             {
                 addRound(new BumperRound());
@@ -171,6 +173,7 @@ public class RoundManager : MonoBehaviour
 
     public void loadLevel(int number)
     {
+        Debug.Log(number);
         GameObject level = Instantiate(Resources.Load<GameObject>("Levels/" + number.ToString()));
         level.transform.SetParent(GameManager.instance.levelManager.transform);
         level.transform.position = level.transform.parent.transform.position + level.transform.position;
@@ -241,13 +244,11 @@ public class RoundManager : MonoBehaviour
 
     void updateScreenClock()
     {
-        //photon how??? (ryans problem)
-        //todo: make canvas and set the clock
         int counter = currentRoundSeconds - currentRoundSecondsElapsed ;
         int minutes = 0;
         int seconds = 0;
         string extraSecondZero = "";
-        while (counter> 60)
+        while (counter> 59)
         {
             counter -= 60;
             minutes++;
