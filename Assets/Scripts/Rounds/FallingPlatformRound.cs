@@ -9,6 +9,7 @@ public class FallingPlatformRound : Round
         hasMap = true;
         roundTime = 60;
         mapPrefabName = "FallingPlatforms";
+        type = roundType.FALLING_PLATFORMS;
     }
 
     protected override void setWinCondition()
