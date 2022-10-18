@@ -32,6 +32,7 @@ public class TimerEvents : MonoBehaviour
         if(timeSinceLastSecond > 1)
         {
             EventManager.onSecondTickEvent?.Invoke(null,EventArgs.Empty);
+            timeSinceLastSecond = 0;
         }
     }
 }
