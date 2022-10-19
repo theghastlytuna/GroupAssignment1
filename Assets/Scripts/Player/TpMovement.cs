@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Photon.Pun;
+using Cinemachine;
 
 public class TpMovement : MonoBehaviour
 {
@@ -36,6 +37,8 @@ public class TpMovement : MonoBehaviour
 
     RaycastHit rayHit;
 
+    bool editing = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -46,6 +49,8 @@ public class TpMovement : MonoBehaviour
 
         //Photon component attached to player
         view = GetComponent<PhotonView>();
+
+        GameObject.Find("EditorCanvas").GetComponent<Canvas>().enabled = false;
     }
 
     // Update is called once per frame
@@ -154,5 +159,22 @@ public class TpMovement : MonoBehaviour
     public bool GetIsGrounded()
     {
         return isGrounded;
+    }
+
+    void OnEnableUI()
+    {
+        GameObject.Find("EditorCanvas").GetComponent<Canvas>().enabled = !GameObject.Find("EditorCanvas").GetComponent<Canvas>().enabled;
+
+        editing = !editing;
+
+        playerCam.GetComponent<CinemachineBrain>().enabled = !playerCam.GetComponent<CinemachineBrain>().enabled;
+
+        Cursor.visible = !Cursor.visible;
+
+        if (editing) Cursor.lockState = CursorLockMode.None;
+
+        else Cursor.lockState = CursorLockMode.Locked;
+
+        //spawnerUI.enabled = !spawnerUI.enabled;
     }
 }
