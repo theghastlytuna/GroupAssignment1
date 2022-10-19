@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Photon.Pun;
+using Cinemachine;
 
 public class TpMovement : MonoBehaviour
 {
@@ -38,6 +39,10 @@ public class TpMovement : MonoBehaviour
 
     Vector3 groundNormal = Vector3.up;
 
+    bool editing = false;
+
+    //public Canvas spawnerUI;
+
     //float groundAngle = 0f;
 
     // Start is called before the first frame update
@@ -50,6 +55,8 @@ public class TpMovement : MonoBehaviour
 
         //Photon component attached to player
         view = GetComponent<PhotonView>();
+
+        GameObject.Find("EditorCanvas").GetComponent<Canvas>().enabled = false;
     }
 
     // Update is called once per frame
@@ -148,5 +155,22 @@ public class TpMovement : MonoBehaviour
     public float GetJumpForce()
     {
         return jumpForce;
+    }
+
+    void OnEnableUI()
+    {
+        GameObject.Find("EditorCanvas").GetComponent<Canvas>().enabled = !GameObject.Find("EditorCanvas").GetComponent<Canvas>().enabled;
+
+        editing = !editing;
+
+        playerCam.GetComponent<CinemachineBrain>().enabled = !playerCam.GetComponent<CinemachineBrain>().enabled;
+
+        Cursor.visible = !Cursor.visible;
+
+        if (editing) Cursor.lockState = CursorLockMode.None;
+
+        else Cursor.lockState = CursorLockMode.Locked;
+
+        //spawnerUI.enabled = !spawnerUI.enabled;
     }
 }
