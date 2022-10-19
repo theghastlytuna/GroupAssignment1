@@ -1231,6 +1231,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   superjumpForce: 20
   slowfallForce: 10
+  maxFallSpeed: -4
   powerUpDuration: 3
   selectedPowerUp: 0
 --- !u!114 &8360810863972604655
