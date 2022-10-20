@@ -7,10 +7,17 @@ public class JumpCommand : CommandAbstract
     TpMovement player;
     private void Start()
     {
-        player = FindObjectOfType<TpMovement>();
+        Invoke("findPlayer", 1);
     }
     public override void execute()
     {
+        Debug.Log("Jumping");
+        //if (player == null) return;
         player.OnJump();
+    }
+
+    void findPlayer()
+    {
+        player = FindObjectOfType<TpMovement>();
     }
 }
