@@ -98,6 +98,33 @@ public partial class @UserInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Save"",
+                    ""type"": ""Button"",
+                    ""id"": ""828f6f18-6bd4-434e-8567-8053e6baddd8"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ModSpeed"",
+                    ""type"": ""Button"",
+                    ""id"": ""e67423ea-c1d3-4912-81d9-a3c1c5d74763"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ModJump"",
+                    ""type"": ""Button"",
+                    ""id"": ""4a84d6da-711e-472d-b74a-223939a1c5dc"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -384,6 +411,39 @@ public partial class @UserInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""EnableUI"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""72d8b2a5-da52-4de3-80c7-da2278aa857e"",
+                    ""path"": ""<Keyboard>/h"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Save"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""24f2545f-a3f6-4ab8-9387-393465b761c8"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ModSpeed"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7266d09c-9b84-4cbe-ae89-c23dd5dca5ef"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ModJump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -979,6 +1039,9 @@ public partial class @UserInput : IInputActionCollection2, IDisposable
         m_Player_Aim = m_Player.FindAction("Aim", throwIfNotFound: true);
         m_Player_PowerUp = m_Player.FindAction("PowerUp", throwIfNotFound: true);
         m_Player_EnableUI = m_Player.FindAction("EnableUI", throwIfNotFound: true);
+        m_Player_Save = m_Player.FindAction("Save", throwIfNotFound: true);
+        m_Player_ModSpeed = m_Player.FindAction("ModSpeed", throwIfNotFound: true);
+        m_Player_ModJump = m_Player.FindAction("ModJump", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1058,6 +1121,9 @@ public partial class @UserInput : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Aim;
     private readonly InputAction m_Player_PowerUp;
     private readonly InputAction m_Player_EnableUI;
+    private readonly InputAction m_Player_Save;
+    private readonly InputAction m_Player_ModSpeed;
+    private readonly InputAction m_Player_ModJump;
     public struct PlayerActions
     {
         private @UserInput m_Wrapper;
@@ -1070,6 +1136,9 @@ public partial class @UserInput : IInputActionCollection2, IDisposable
         public InputAction @Aim => m_Wrapper.m_Player_Aim;
         public InputAction @PowerUp => m_Wrapper.m_Player_PowerUp;
         public InputAction @EnableUI => m_Wrapper.m_Player_EnableUI;
+        public InputAction @Save => m_Wrapper.m_Player_Save;
+        public InputAction @ModSpeed => m_Wrapper.m_Player_ModSpeed;
+        public InputAction @ModJump => m_Wrapper.m_Player_ModJump;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1103,6 +1172,15 @@ public partial class @UserInput : IInputActionCollection2, IDisposable
                 @EnableUI.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEnableUI;
                 @EnableUI.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEnableUI;
                 @EnableUI.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEnableUI;
+                @Save.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSave;
+                @Save.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSave;
+                @Save.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSave;
+                @ModSpeed.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnModSpeed;
+                @ModSpeed.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnModSpeed;
+                @ModSpeed.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnModSpeed;
+                @ModJump.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnModJump;
+                @ModJump.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnModJump;
+                @ModJump.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnModJump;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -1131,6 +1209,15 @@ public partial class @UserInput : IInputActionCollection2, IDisposable
                 @EnableUI.started += instance.OnEnableUI;
                 @EnableUI.performed += instance.OnEnableUI;
                 @EnableUI.canceled += instance.OnEnableUI;
+                @Save.started += instance.OnSave;
+                @Save.performed += instance.OnSave;
+                @Save.canceled += instance.OnSave;
+                @ModSpeed.started += instance.OnModSpeed;
+                @ModSpeed.performed += instance.OnModSpeed;
+                @ModSpeed.canceled += instance.OnModSpeed;
+                @ModJump.started += instance.OnModJump;
+                @ModJump.performed += instance.OnModJump;
+                @ModJump.canceled += instance.OnModJump;
             }
         }
     }
@@ -1295,6 +1382,9 @@ public partial class @UserInput : IInputActionCollection2, IDisposable
         void OnAim(InputAction.CallbackContext context);
         void OnPowerUp(InputAction.CallbackContext context);
         void OnEnableUI(InputAction.CallbackContext context);
+        void OnSave(InputAction.CallbackContext context);
+        void OnModSpeed(InputAction.CallbackContext context);
+        void OnModJump(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

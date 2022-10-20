@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 575967481415569179}
   m_Layer: 0
   m_Name: PachinkoBall
-  m_TagString: Untagged
+  m_TagString: Pachinko
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
