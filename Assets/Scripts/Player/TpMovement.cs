@@ -139,7 +139,7 @@ public class TpMovement : MonoBehaviour
 	}
 
     //New input system
-    void OnJump()
+    public void OnJump()
     {
         if (isGrounded) rBody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
     }
