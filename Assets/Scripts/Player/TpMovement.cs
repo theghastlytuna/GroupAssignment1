@@ -24,6 +24,7 @@ public class TpMovement : MonoBehaviour
     [Header("Camera")]
 	[SerializeField] private Camera playerCam;
 
+    Vector2 moveInput;
     float horizontalInput;
     float verticalInput;
 
@@ -39,9 +40,20 @@ public class TpMovement : MonoBehaviour
 
     bool editing = false;
 
+    UserInput inputAction;
+
     // Start is called before the first frame update
     void Start()
     {
+        inputAction = InputController.controller.inputAction;
+
+        inputAction.Player.Move.performed += cntxt => moveInput = cntxt.ReadValue<Vector2>();
+        inputAction.Player.Move.canceled += cntxt => moveInput = Vector2.zero;
+
+        inputAction.Player.Jump.performed += cntxt => OnJump();
+
+        inputAction.Player.EnableUI.performed += cntxt => OnEnableUI();
+
         rBody = GetComponent<Rigidbody>();
        
         //Freeze the rotation of the rigid body, ensuring it doesn't fall over
@@ -63,6 +75,9 @@ public class TpMovement : MonoBehaviour
     {
         //if you control THAT character
         if (view.IsMine)        {
+            horizontalInput = moveInput.x;
+            verticalInput = moveInput.y;
+
             isGrounded = Physics.CheckSphere(feetTransform.position, 0.1f, floorMask);
 
             RotatePlayer();
@@ -154,6 +169,11 @@ public class TpMovement : MonoBehaviour
     public float GetJumpForce()
     {
         return jumpForce;
+    }
+
+    public void SetMaxSpeed(float newSpeed)
+    {
+        maxSpeed = newSpeed;
     }
 
     public bool GetIsGrounded()

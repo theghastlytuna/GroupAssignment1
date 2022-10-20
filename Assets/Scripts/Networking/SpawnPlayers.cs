@@ -13,7 +13,6 @@ public class SpawnPlayers : MonoBehaviour
     public float minZ;
     public float maxZ;
    
-
     private void Start()
     {
         SpawnMyPlayer();
@@ -26,7 +25,7 @@ public class SpawnPlayers : MonoBehaviour
 
         //ENABLED SO THAT EACH CLIENT HAS THEIR OWN VERSION
         myPlayer.GetComponent<TpMovement>().enabled = true;
-        myPlayer.GetComponent<PlayerInput>().enabled = true;
+        //myPlayer.GetComponent<PlayerInput>().enabled = true;
         myPlayer.GetComponent<CharacterAiming>().enabled = true;
         myPlayer.GetComponent<CameraSettings>().enabled = true;
         myPlayer.transform.Find("Camera Holder").gameObject.SetActive(true);

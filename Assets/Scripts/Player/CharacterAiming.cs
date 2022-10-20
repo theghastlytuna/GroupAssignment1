@@ -22,6 +22,8 @@ public class CharacterAiming : MonoBehaviour
 
     GameObject heldProjectile = null;
 
+    UserInput inputAction;
+
     private void OnEnable()
     {
     }
@@ -29,6 +31,13 @@ public class CharacterAiming : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        inputAction = InputController.controller.inputAction;
+
+        inputAction.Player.Aim.performed += cntxt => OnAim();
+        inputAction.Player.Aim.canceled += cntxt => OnAim();
+
+        inputAction.Player.Fire.performed += cntxt => OnFire();
+
         //Lock the cursor, make it invisible
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
